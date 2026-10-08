@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+
+  <title>R Brothers Ticket Scanner</title>
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 18px;
+      font-family: -apple-system, BlinkMacSystemFont,
+                   "Segoe UI", sans-serif;
+      background: #f3f5f7;
+      color: #172832;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: auto;
+    }
+
+    .header {
+      text-align: center;
+      margin: 20px 0 25px;
+    }
+
+    .brand {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: 3px;
+    }
+
+    .subtitle {
+      color: #777;
+      margin-top: 6px;
+      font-size: 14px;
+    }
+
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 3px 15px #00000009;
+      margin-bottom: 18px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      background: white;
+      padding: 18px 8px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 25px;
+      color: #172832;
+      margin-bottom: 5px;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .primary {
+      background: #172832;
+      color: white;
+    }
+
+    .secondary {
+      background: #e8edf2;
+      color: #172832;
+    }
+
+    .confirm {
+      background: #16803d;
+      color: white;
+    }
+
+    button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 9px;
+      font-size: 16px;
+      margin: 8px 0;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    #reader {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+
+    #result {
+      display: none;
+      margin-top: 18px;
+      padding: 22px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .info {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .ticket-number {
+      font-size: 22px;
+      margin-top: 8px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #aaa;
+      margin: 25px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="brand">R BROTHERS</div>
+
+    <div class="subtitle">
+      KABADDI 5 — YOKOHAMA<br>
+      Ticket Verification System
+    </div>
+  </div>
+
+  <!-- STAFF LOGIN -->
+
+  <div class="card" id="loginCard">
+    <h3>Staff Access</h3>
+
+    <label>Staff Name</label>
+    <input id="staffName"
+           placeholder="Enter your name"
+           autocomplete="off">
+
+    <label>Staff Access Key</label>
+    <input id="staffKey"
+           type="password"
+           placeholder="Enter staff access key"
+           autocomplete="off">
+
+    <button class="primary" onclick="login()">
+      Open Scanner
+    </button>
+  </div>
+
+  <!-- SCANNER DASHBOARD -->
+
+  <div id="dashboard" class="hidden">
+
+    <div class="stats">
+      <div class="stat">
+        <strong id="total">0</strong>
+        Total
+      </div>
+
+      <div class="stat">
+        <strong id="available">0</strong>
+        Available
+      </div>
+
+      <div class="stat">
+        <strong id="used">0</strong>
+        Checked In
+      </div>
+    </div>
+
+    <div class="card">
+
+      <h3>Entrance Scanner</h3>
+
+      <div id="reader"></div>
+
+      <button id="startButton"
+              class="primary"
+              onclick="startScanner()">
+        📷 Start Camera Scanner
+      </button>
+
+      <button class="secondary"
+              onclick="stopScanner()">
+        Stop Camera
+      </button>
+
+      <label>Manual Ticket Verification</label>
+
+      <input id="ticketInput"
+             placeholder="Scan or paste ticket token">
+
+      <button class="secondary"
+              onclick="verifyTicket()">
+        Verify Ticket
+      </button>
+
+      <div id="result"></div>
+
+      <button id="checkinButton"
+              class="confirm hidden"
+              onclick="confirmCheckIn()">
+        Confirm Check-in
+      </button>
+
+      <button class="secondary"
+              onclick="resetScanner()">
+        Next Ticket
+      </button>
+
+    </div>
+
+    <button class="secondary" onclick="logout()">
+      Logout
+    </button>
+
+  </div>
+
+  <div class="footer">
+    Powered by R Brothers
+  </div>
+
+</div>
+
+<script>
+
+// ========================================
+// CONFIGURATION
+// ========================================
+
+// Replace with your Cloudflare Worker URL.
+const API_URL =
+  "https://YOUR-WORKER.YOUR-SUBDOMAIN.workers.dev";
+
+let staffName = "";
+let staffKey = "";
+
+let scanner = null;
+let scannerRunning = false;
+let processing = false;
+let scanHandled = false;
+
+let verifiedToken = null;
+
+
+// ========================================
+// API COMMUNICATION
+// ========================================
+
+async function apiRequest(action, token = "") {
+  const response = await fetch(API_URL, {
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json",
+      "X-Staff-Key": staffKey
+    },
+
+    body: JSON.stringify({
+      action,
+      token,
+      staff: staffName
+    })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Server error");
+  }
+
+  return data;
+}
+
+
+// ========================================
+// STAFF LOGIN
+// ========================================
+
+async function login() {
+  const name =
+    document.getElementById("staffName").value.trim();
+
+  const key =
+    document.getElementById("staffKey").value.trim();
+
+  if (!name || !key) {
+    alert("Enter staff name and access key.");
+    return;
+  }
+
+  staffName = name;
+  staffKey = key;
+
+  try {
+    await loadDashboard();
+
+    document.getElementById("loginCard")
+      .classList.add("hidden");
+
+    document.getElementById("dashboard")
+      .classList.remove("hidden");
+
+  } catch (error) {
+    staffKey = "";
+    alert("Login failed: " + error.message);
+  }
+}
+
+
+// ========================================
+// DASHBOARD
+// ========================================
+
+async function loadDashboard() {
+  const data = await apiRequest("dashboard");
+
+  if (!data.success) {
+    throw new Error(data.message || "Dashboard error");
+  }
+
+  document.getElementById("total").textContent =
+    data.total;
+
+  document.getElementById("available").textContent =
+    data.available;
+
+  document.getElementById("used").textContent =
+    data.used;
+}
+
+
+// ========================================
+// EXTRACT TOKEN
+// ========================================
+
+function extractToken(value) {
+  value = value.trim();
+
+  try {
+    const url = new URL(value);
+
+    // Only accept URLs with a token parameter.
+    return url.searchParams.get("t") || "";
+
+  } catch (error) {
+    return value;
+  }
+}
+
+
+// ========================================
+// DISPLAY RESULT
+// ========================================
+
+function showResult(message, type, ticketNumber = "") {
+  const result = document.getElementById("result");
+
+  result.className = type;
+  result.style.display = "block";
+
+  result.innerHTML = "";
+
+  const messageElement = document.createElement("div");
+  messageElement.textContent = message;
+  result.appendChild(messageElement);
+
+  if (ticketNumber) {
+    const numberElement = document.createElement("div");
+    numberElement.className = "ticket-number";
+    numberElement.textContent = ticketNumber;
+    result.appendChild(numberElement);
+  }
+}
+
+
+// ========================================
+// START CAMERA
+// ========================================
+
+async function startScanner() {
+  if (scannerRunning || processing) return;
+
+  try {
+    if (typeof Html5Qrcode === "undefined") {
+      throw new Error("Scanner library not loaded.");
+    }
+
+    scanner = new Html5Qrcode("reader", {
+      formatsToSupport: [
+        Html5QrcodeSupportedFormats.QR_CODE,
+        Html5QrcodeSupportedFormats.CODE_128
+      ],
+
+      useBarCodeDetectorIfSupported: false,
+      verbose: false
+    });
+
+    scanHandled = false;
+
+    await scanner.start(
+      { facingMode: "environment" },
+
+      {
+        fps: 10,
+
+        qrbox: function(width, height) {
+          return {
+            width: Math.min(260, width),
+            height: Math.min(140, height)
+          };
+        }
+      },
+
+      async function(decodedText) {
+        if (scanHandled) return;
+
+        scanHandled = true;
+
+        document.getElementById("ticketInput").value =
+          decodedText;
+
+        await stopScanner();
+
+        await verifyTicket();
+      },
+
+      function(error) {
+        // No barcode found in the current frame.
+      }
+    );
+
+    scannerRunning = true;
+
+    document.getElementById("startButton").disabled =
+      true;
+
+  } catch (error) {
+    scannerRunning = false;
+
+    showResult(
+      "Camera Error: " +
+      (error?.message || String(error)),
+      "error"
+    );
+
+    await stopScanner();
+  }
+}
+
+
+// ========================================
+// STOP CAMERA
+// ========================================
+
+async function stopScanner() {
+  scannerRunning = false;
+
+  if (scanner) {
+    try {
+      if (scanner.isScanning) {
+        await scanner.stop();
+      }
+
+      scanner.clear();
+
+    } catch (error) {
+      console.error(error);
+    }
+
+    scanner = null;
+  }
+
+  document.getElementById("startButton").disabled =
+    false;
+}
+
+
+// ========================================
+// VERIFY TICKET
+// ========================================
+
+async function verifyTicket() {
+  if (processing) return;
+
+  const input =
+    document.getElementById("ticketInput").value;
+
+  const token = extractToken(input);
+
+  if (!token) {
+    showResult("No ticket token found.", "error");
+    return;
+  }
+
+  verifiedToken = null;
+  processing = true;
+
+  document.getElementById("checkinButton")
+    .classList.add("hidden");
+
+  try {
+    const data = await apiRequest("verify", token);
+
+    if (data.success && data.status === "AVAILABLE") {
+      verifiedToken = token;
+
+      showResult(
+        "✅ VALID TICKET",
+        "success",
+        data.ticketNumber
+      );
+
+      document.getElementById("checkinButton")
+        .classList.remove("hidden");
+
+    } else {
+      showResult(
+        "❌ " + data.message,
+        "error",
+        data.ticketNumber
+      );
+    }
+
+  } catch (error) {
+    showResult(error.message, "error");
+
+  } finally {
+    processing = false;
+  }
+}
+
+
+// ========================================
+// CONFIRM CHECK-IN
+// ========================================
+
+async function confirmCheckIn() {
+  if (!verifiedToken || processing) return;
+
+  processing = true;
+
+  const token = verifiedToken;
+  verifiedToken = null;
+
+  document.getElementById("checkinButton")
+    .classList.add("hidden");
+
+  try {
+    const data = await apiRequest("checkin", token);
+
+    showResult(
+      data.message,
+      data.success ? "success" : "error",
+      data.ticketNumber
+    );
+
+    await loadDashboard();
+
+  } catch (error) {
+    showResult(error.message, "error");
+
+  } finally {
+    processing = false;
+  }
+}
+
+
+// ========================================
+// NEXT TICKET
+// ========================================
+
+async function resetScanner() {
+  await stopScanner();
+
+  verifiedToken = null;
+  scanHandled = false;
+
+  document.getElementById("ticketInput").value = "";
+
+  document.getElementById("result").style.display =
+    "none";
+
+  document.getElementById("checkinButton")
+    .classList.add("hidden");
+}
+
+
+// ========================================
+// LOGOUT
+// ========================================
+
+async function logout() {
+  await stopScanner();
+
+  staffKey = "";
+  staffName = "";
+  verifiedToken = null;
+
+  document.getElementById("staffKey").value = "";
+
+  document.getElementById("dashboard")
+    .classList.add("hidden");
+
+  document.getElementById("loginCard")
+    .classList.remove("hidden");
+}
+
+</script>
+
+</body>
+</html>
