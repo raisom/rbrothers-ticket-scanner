@@ -322,7 +322,24 @@ async function apiRequest(action, token = "") {
     })
   });
 
-  const data = await response.json();
+  const responseText = await response.text();
+
+let data;
+
+try {
+  data = JSON.parse(responseText);
+} catch (error) {
+  console.error("Unexpected API response:", {
+    status: response.status,
+    contentType: response.headers.get("content-type"),
+    preview: responseText.slice(0, 200)
+  });
+
+  throw new Error(
+    "API returned HTML instead of JSON. " +
+    "HTTP status: " + response.status
+  );
+}
 
   if (!response.ok) {
     throw new Error(data.message || "Server error");
