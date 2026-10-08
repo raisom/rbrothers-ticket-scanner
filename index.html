@@ -1,720 +1,1370 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1,
+             maximum-scale=1, viewport-fit=cover"
+  >
 
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1">
+  <title>R Brothers | Ticket Scanner</title>
 
-  <title>R Brothers Ticket Scanner</title>
-
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script
+    src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js">
+  </script>
 
   <style>
+    :root {
+      --bg: #eef1f4;
+      --card: #ffffff;
+      --dark: #14232d;
+      --gold: #c9a354;
+      --green: #15803d;
+      --red: #b91c1c;
+      --muted: #64748b;
+    }
+
     * {
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
       margin: 0;
-      padding: 18px;
+      width: 100%;
+      min-height: 100%;
       font-family: -apple-system, BlinkMacSystemFont,
-                   "Segoe UI", sans-serif;
-      background: #f3f5f7;
-      color: #172832;
+                   "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--dark);
     }
 
-    .container {
-      max-width: 480px;
-      margin: auto;
+    body {
+      overscroll-behavior: none;
     }
+
+    button, input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 500px;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0 auto;
+      padding: max(8px, env(safe-area-inset-top))
+               12px
+               max(8px, env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    /* HEADER */
 
     .header {
-      text-align: center;
-      margin: 20px 0 25px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
     }
 
-    .brand {
-      font-size: 30px;
-      font-weight: 800;
-      letter-spacing: 3px;
-    }
-
-    .subtitle {
-      color: #777;
-      margin-top: 6px;
-      font-size: 14px;
-    }
-
-    .card {
-      background: #fff;
-      padding: 20px;
+    .logo-box {
+      width: 66px;
+      height: 66px;
+      flex-shrink: 0;
+      background: #050505;
       border-radius: 15px;
-      box-shadow: 0 3px 15px #00000009;
-      margin-bottom: 18px;
+      padding: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      box-shadow: 0 3px 10px #0002;
     }
+
+    .logo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .header-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .header-text h1 {
+      font-size: 19px;
+      line-height: 1.15;
+      margin: 0;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .header-text p {
+      font-size: 11px;
+      margin: 4px 0 0;
+      color: var(--muted);
+    }
+
+    .connection {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #16a34a;
+    }
+
+    .dot.offline {
+      background: var(--red);
+    }
+
+    /* DASHBOARD */
 
     .stats {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 18px;
+      gap: 7px;
+      flex-shrink: 0;
     }
 
     .stat {
-      background: white;
-      padding: 18px 8px;
-      border-radius: 12px;
+      background: var(--card);
+      border-radius: 11px;
       text-align: center;
-      font-size: 12px;
-      color: #666;
+      padding: 9px 4px;
+      box-shadow: 0 1px 5px #00000008;
     }
 
     .stat strong {
       display: block;
-      font-size: 25px;
-      color: #172832;
-      margin-bottom: 5px;
+      font-size: 24px;
+      line-height: 1.1;
     }
 
-    button {
-      border: none;
-      border-radius: 10px;
-      padding: 15px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 10px;
+    .stat span {
+      font-size: 10px;
+      color: var(--muted);
     }
 
-    .primary {
-      background: #172832;
-      color: white;
+    .stat.used strong {
+      color: var(--green);
     }
 
-    .secondary {
-      background: #e8edf2;
-      color: #172832;
+    /* SCANNER */
+
+    .scanner-card {
+      background: var(--card);
+      padding: 10px;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px #0000000a;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .confirm {
-      background: #16803d;
-      color: white;
+    .scanner-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
     }
 
-    button:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
+    .scanner-title h2 {
+      margin: 0;
+      font-size: 14px;
     }
 
-    input {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid #ddd;
-      border-radius: 9px;
-      font-size: 16px;
-      margin: 8px 0;
+    .scanner-badge {
+      font-size: 10px;
+      background: #e2e8f0;
+      padding: 5px 8px;
+      border-radius: 20px;
+      color: #475569;
+      white-space: nowrap;
     }
 
-    label {
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    #reader {
-      width: 100%;
-      overflow: hidden;
-      border-radius: 10px;
-    }
-
-    #result {
-      display: none;
-      margin-top: 18px;
-      padding: 22px;
-      border-radius: 12px;
-      text-align: center;
-      font-weight: 700;
-      overflow-wrap: anywhere;
-    }
-
-    .success {
+    .scanner-badge.active {
       background: #dcfce7;
       color: #166534;
     }
 
-    .error {
+    .camera-wrap {
+      flex: 1;
+      min-height: 150px;
+      max-height: 45dvh;
+      background: #101820;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #reader {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #reader video {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+    }
+
+    #reader img {
+      max-width: 100%;
+    }
+
+    .camera-placeholder {
+      position: absolute;
+      text-align: center;
+      color: #cbd5e1;
+      pointer-events: none;
+      padding: 15px;
+    }
+
+    .camera-placeholder .icon {
+      font-size: 38px;
+      margin-bottom: 8px;
+    }
+
+    .camera-placeholder p {
+      font-size: 12px;
+      margin: 0;
+    }
+
+    /* RESULT */
+
+    .result {
+      flex-shrink: 0;
+      min-height: 72px;
+      border-radius: 11px;
+      padding: 11px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 3px;
+      background: #f1f5f9;
+    }
+
+    .result-title {
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .result-number {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .result-detail {
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.35;
+    }
+
+    .result.success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .result.error {
       background: #fee2e2;
       color: #991b1b;
     }
 
-    .info {
+    .result.warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .result.info {
       background: #dbeafe;
       color: #1e40af;
     }
 
-    .ticket-number {
-      font-size: 22px;
-      margin-top: 8px;
+    /* BUTTONS */
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      flex-shrink: 0;
     }
 
-    .hidden {
-      display: none;
+    .btn {
+      border: none;
+      min-height: 43px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
     }
+
+    .btn-primary {
+      background: var(--dark);
+      color: white;
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .btn-light {
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    .btn-success {
+      background: #15803d;
+      color: white;
+    }
+
+    /* FOOTER */
 
     .footer {
-      text-align: center;
-      font-size: 12px;
-      color: #aaa;
-      margin: 25px 0;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
     }
 
-    .logo-container {
-  width: 190px;
-  height: 150px;
-  margin: 0 auto 16px;
-  padding: 12px;
-  background: #080808;
-  border-radius: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-}
+    .footer button {
+      border: none;
+      background: transparent;
+      color: var(--red);
+      font-weight: 700;
+      padding: 6px;
+    }
 
-.brand-logo {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
+    /* MANUAL ENTRY */
 
-#reader {
-  border-radius: 16px;
-  overflow: hidden;
-}
+    details {
+      flex-shrink: 0;
+      background: white;
+      border-radius: 10px;
+      padding: 9px 12px;
+    }
 
-#reader video {
-  border-radius: 12px;
-}
+    summary {
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .manual-row {
+      display: flex;
+      gap: 7px;
+      margin-top: 9px;
+    }
+
+    .manual-row input {
+      flex: 1;
+      min-width: 0;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      font-size: 13px;
+    }
+
+    .manual-row button {
+      width: 90px;
+    }
+
+    /* LOGIN */
+
+    .login-card {
+      background: white;
+      border-radius: 18px;
+      padding: 25px;
+      margin: auto 0;
+      box-shadow: 0 5px 25px #00000010;
+    }
+
+    .login-card h2 {
+      margin: 0 0 18px;
+      text-align: center;
+    }
+
+    .login-card label {
+      display: block;
+      margin: 12px 0 5px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .login-card input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      font-size: 16px;
+    }
+
+    .login-card button {
+      width: 100%;
+      margin-top: 18px;
+    }
+
+    .login-error {
+      color: var(--red);
+      font-size: 12px;
+      margin-top: 12px;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* COMPACT IPHONES */
+
+    @media (max-height: 750px) {
+      .app {
+        gap: 6px;
+        padding-top: max(5px, env(safe-area-inset-top));
+      }
+
+      .logo-box {
+        width: 52px;
+        height: 52px;
+      }
+
+      .header-text h1 {
+        font-size: 17px;
+      }
+
+      .stat {
+        padding: 6px 3px;
+      }
+
+      .stat strong {
+        font-size: 21px;
+      }
+
+      .scanner-card {
+        padding: 8px;
+        gap: 6px;
+      }
+
+      .camera-wrap {
+        min-height: 125px;
+      }
+
+      .result {
+        min-height: 61px;
+        padding: 7px;
+      }
+
+      .result-title {
+        font-size: 14px;
+      }
+
+      .result-number {
+        font-size: 15px;
+      }
+
+      .btn {
+        min-height: 38px;
+        padding: 7px 9px;
+      }
+    }
   </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="app">
 
-  <div class="header">
-    <div class="logo-container">
-  <img
-    src="./logo.png"
-    alt="R Brothers"
-    class="brand-logo"
-  />
-</div>
+  <!-- HEADER -->
 
-    <div class="subtitle">
-      KABADDI 5 — YOKOHAMA<br>
-      Ticket Verification System
+  <header class="header">
+    <div class="logo-box">
+      <img src="./logo.png" alt="R Brothers Logo">
     </div>
-  </div>
 
-  <!-- STAFF LOGIN -->
+    <div class="header-text">
+      <h1>R BROTHERS</h1>
+      <p>KABADDI 5 · YOKOHAMA</p>
 
-  <div class="card" id="loginCard">
-    <h3>Staff Access</h3>
+      <div class="connection">
+        <span class="dot" id="connectionDot"></span>
+        <span id="connectionText">Checking network</span>
+      </div>
+    </div>
+  </header>
 
-    <label>Staff Name</label>
-    <input id="staffName"
-           placeholder="Enter your name"
-           autocomplete="off">
+  <!-- LOGIN -->
 
-    <label>Staff Access Key</label>
-    <input id="staffKey"
-           type="password"
-           placeholder="Enter staff access key"
-           autocomplete="off">
+  <section class="login-card" id="loginCard">
 
-    <button class="primary" onclick="login()">
-      Open Scanner
+    <h2>Staff Login</h2>
+
+    <label for="staffName">Staff Name</label>
+    <input
+      id="staffName"
+      placeholder="Enter your name"
+      autocomplete="off"
+    >
+
+    <label for="staffKey">Staff Access Key</label>
+    <input
+      id="staffKey"
+      type="password"
+      placeholder="Enter access key"
+      autocomplete="off"
+    >
+
+    <button
+      class="btn btn-primary"
+      onclick="login()"
+      id="loginButton"
+    >
+      Open Ticket Scanner
     </button>
-  </div>
 
-  <!-- SCANNER DASHBOARD -->
+    <div class="login-error" id="loginError"></div>
+  </section>
 
-  <div id="dashboard" class="hidden">
+  <!-- MAIN DASHBOARD -->
 
-    <div class="stats">
+  <main
+    id="dashboard"
+    class="hidden"
+    style="display:flex;flex-direction:column;gap:9px;flex:1;min-height:0"
+  >
+
+    <section class="stats">
       <div class="stat">
         <strong id="total">0</strong>
-        Total
+        <span>Total Tickets</span>
       </div>
 
       <div class="stat">
         <strong id="available">0</strong>
-        Available
+        <span>Available</span>
       </div>
 
-      <div class="stat">
+      <div class="stat used">
         <strong id="used">0</strong>
-        Checked In
+        <span>Checked In</span>
       </div>
-    </div>
+    </section>
 
-    <div class="card">
+    <section class="scanner-card">
 
-      <h3>Entrance Scanner</h3>
+      <div class="scanner-title">
+        <h2>Entrance Scanner</h2>
+        <span class="scanner-badge" id="cameraStatus">
+          Camera Off
+        </span>
+      </div>
 
-      <div id="reader"></div>
+      <div class="camera-wrap">
 
-      <button id="startButton"
-              class="primary"
-              onclick="startScanner()">
-        📷 Start Camera Scanner
-      </button>
+        <div id="reader"></div>
 
-      <button class="secondary"
-              onclick="stopScanner()">
-        Stop Camera
-      </button>
+        <div
+          class="camera-placeholder"
+          id="cameraPlaceholder"
+        >
+          <div class="icon">▣</div>
+          <p>Tap Start Camera to scan tickets</p>
+        </div>
 
-      <label>Manual Ticket Verification</label>
+      </div>
 
-      <input id="ticketInput"
-             placeholder="Scan or paste ticket token">
+      <div class="result info" id="result">
+        <div class="result-title" id="resultTitle">
+          Ready to Scan
+        </div>
 
-      <button class="secondary"
-              onclick="verifyTicket()">
-        Verify Ticket
-      </button>
+        <div class="result-number" id="resultNumber"></div>
 
-      <div id="result"></div>
+        <div class="result-detail" id="resultDetail">
+          Start the camera to begin check-in.
+        </div>
+      </div>
 
-      <button id="checkinButton"
-              class="confirm hidden"
-              onclick="confirmCheckIn()">
-        Confirm Check-in
-      </button>
+      <div class="button-row">
 
-      <button class="secondary"
-              onclick="resetScanner()">
-        Next Ticket
-      </button>
+        <button
+          id="startButton"
+          class="btn btn-success"
+          onclick="startScanner()"
+        >
+          📷 Start Camera
+        </button>
 
-    </div>
+        <button
+          id="stopButton"
+          class="btn btn-danger"
+          onclick="stopScanner()"
+          disabled
+        >
+          Close Camera
+        </button>
 
-    <button class="secondary" onclick="logout()">
-      Logout
-    </button>
+      </div>
 
-  </div>
+    </section>
 
-  <div class="footer">
-    Created by SOM RAI
-  </div>
+    <details id="manualPanel">
+      <summary>Manual ticket entry / Retry</summary>
+
+      <div class="manual-row">
+        <input
+          id="manualToken"
+          placeholder="Paste ticket QR token"
+          autocomplete="off"
+        >
+
+        <button
+          class="btn btn-primary"
+          onclick="manualCheckIn()"
+        >
+          Check In
+        </button>
+      </div>
+
+      <p style="font-size:11px;color:#64748b">
+        Only use this when scanning fails.
+        Check uncertain transactions before retrying.
+      </p>
+    </details>
+
+    <footer class="footer">
+      <span id="staffDisplay">Staff</span>
+
+      <span>R Brothers Ticket System</span>
+
+      <button onclick="logout()">Logout</button>
+    </footer>
+
+  </main>
 
 </div>
 
 <script>
 
-// ========================================
-// CONFIGURATION
-// ========================================
+  // =====================================
+  // CONFIGURATION
+  // =====================================
 
-// Replace with your Cloudflare Worker URL.
-const API_URL =
-  "https://rbrothers-ticket-api.raisom2014.workers.dev";
+  const API_URL =
+    "https://rbrothers-ticket-api.raisom2014.workers.dev";
 
-let staffName = "";
-let staffKey = "";
+  const SCAN_COOLDOWN_MS = 2500;
 
-let scanner = null;
-let scannerRunning = false;
-let processing = false;
-let scanHandled = false;
+  let staffName = "";
+  let staffKey = "";
 
-let verifiedToken = null;
+  let scanner = null;
+  let scannerRunning = false;
+  let scannerStarting = false;
 
+  let processing = false;
 
-// ========================================
-// API COMMUNICATION
-// ========================================
+  let lastToken = "";
+  let lastScanTime = 0;
 
-async function apiRequest(action, token = "") {
-  const response = await fetch(API_URL, {
-    method: "POST",
+  let dashboardTimer = null;
 
-    headers: {
-      "Content-Type": "application/json",
-      "X-Staff-Key": staffKey
-    },
+  // =====================================
+  // NETWORK STATUS
+  // =====================================
 
-    body: JSON.stringify({
-      action,
-      token,
-      staff: staffName
-    })
-  });
+  function updateConnection() {
+    const online = navigator.onLine;
 
-  const responseText = await response.text();
+    document.getElementById("connectionDot")
+      .classList.toggle("offline", !online);
 
-let data;
-
-try {
-  data = JSON.parse(responseText);
-} catch (error) {
-  console.error("Unexpected API response:", {
-    status: response.status,
-    contentType: response.headers.get("content-type"),
-    preview: responseText.slice(0, 200)
-  });
-
-  throw new Error(
-    "API returned HTML instead of JSON. " +
-    "HTTP status: " + response.status
-  );
-}
-
-  if (!response.ok) {
-    throw new Error(data.message || "Server error");
+    document.getElementById("connectionText")
+      .textContent = online
+        ? "Network available"
+        : "Offline";
   }
 
-  return data;
-}
+  window.addEventListener("online", updateConnection);
+  window.addEventListener("offline", updateConnection);
 
+  updateConnection();
 
-// ========================================
-// STAFF LOGIN
-// ========================================
+  // =====================================
+  // API REQUEST
+  // =====================================
 
-async function login() {
-  const name =
-    document.getElementById("staffName").value.trim();
+  async function apiRequest(action, token = "") {
 
-  const key =
-    document.getElementById("staffKey").value.trim();
+    const controller = new AbortController();
 
-  if (!name || !key) {
-    alert("Enter staff name and access key.");
-    return;
-  }
-
-  staffName = name;
-  staffKey = key;
-
-  try {
-    await loadDashboard();
-
-    document.getElementById("loginCard")
-      .classList.add("hidden");
-
-    document.getElementById("dashboard")
-      .classList.remove("hidden");
-
-  } catch (error) {
-    staffKey = "";
-    alert("Login failed: " + error.message);
-  }
-}
-
-
-// ========================================
-// DASHBOARD
-// ========================================
-
-async function loadDashboard() {
-  const data = await apiRequest("dashboard");
-
-  if (!data.success) {
-    throw new Error(data.message || "Dashboard error");
-  }
-
-  document.getElementById("total").textContent =
-    data.total;
-
-  document.getElementById("available").textContent =
-    data.available;
-
-  document.getElementById("used").textContent =
-    data.used;
-}
-
-
-// ========================================
-// EXTRACT TOKEN
-// ========================================
-
-function extractToken(value) {
-  value = value.trim();
-
-  try {
-    const url = new URL(value);
-
-    // Only accept URLs with a token parameter.
-    return url.searchParams.get("t") || "";
-
-  } catch (error) {
-    return value;
-  }
-}
-
-
-// ========================================
-// DISPLAY RESULT
-// ========================================
-
-function showResult(message, type, ticketNumber = "") {
-  const result = document.getElementById("result");
-
-  result.className = type;
-  result.style.display = "block";
-
-  result.innerHTML = "";
-
-  const messageElement = document.createElement("div");
-  messageElement.textContent = message;
-  result.appendChild(messageElement);
-
-  if (ticketNumber) {
-    const numberElement = document.createElement("div");
-    numberElement.className = "ticket-number";
-    numberElement.textContent = ticketNumber;
-    result.appendChild(numberElement);
-  }
-}
-
-
-// ========================================
-// START CAMERA
-// ========================================
-
-async function startScanner() {
-  if (scannerRunning || processing) return;
-
-  try {
-    if (typeof Html5Qrcode === "undefined") {
-      throw new Error("Scanner library not loaded.");
-    }
-
-    scanner = new Html5Qrcode("reader", {
-      formatsToSupport: [
-        Html5QrcodeSupportedFormats.QR_CODE,
-        Html5QrcodeSupportedFormats.CODE_128
-      ],
-
-      useBarCodeDetectorIfSupported: false,
-      verbose: false
-    });
-
-    scanHandled = false;
-
-    await scanner.start(
-      { facingMode: "environment" },
-
-      {
-        fps: 10,
-
-        qrbox: function(width, height) {
-          return {
-            width: Math.min(260, width),
-            height: Math.min(140, height)
-          };
-        }
-      },
-
-      async function(decodedText) {
-        if (scanHandled) return;
-
-        scanHandled = true;
-
-        document.getElementById("ticketInput").value =
-          decodedText;
-
-        await stopScanner();
-
-        await verifyTicket();
-      },
-
-      function(error) {
-        // No barcode found in the current frame.
-      }
+    const timer = setTimeout(
+      () => controller.abort(),
+      12000
     );
 
-    scannerRunning = true;
-
-    document.getElementById("startButton").disabled =
-      true;
-
-  } catch (error) {
-    scannerRunning = false;
-
-    showResult(
-      "Camera Error: " +
-      (error?.message || String(error)),
-      "error"
-    );
-
-    await stopScanner();
-  }
-}
-
-
-// ========================================
-// STOP CAMERA
-// ========================================
-
-async function stopScanner() {
-  scannerRunning = false;
-
-  if (scanner) {
     try {
-      if (scanner.isScanning) {
-        await scanner.stop();
+
+      const response = await fetch(API_URL, {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          "X-Staff-Key": staffKey
+        },
+
+        body: JSON.stringify({
+          action: action,
+          token: token,
+          staff: staffName
+        }),
+
+        signal: controller.signal
+      });
+
+      const contentType =
+        response.headers.get("content-type") || "";
+
+      if (!contentType.includes("application/json")) {
+        throw new Error(
+          "Server returned an invalid response."
+        );
       }
 
-      scanner.clear();
+      const data = await response.json();
 
-    } catch (error) {
-      console.error(error);
+      if (!response.ok) {
+        const error = new Error(
+          data.message || "Server request failed"
+        );
+        error.status = response.status;
+        throw error;
+      }
+
+      return data;
+
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  // =====================================
+  // ERROR MESSAGES
+  // =====================================
+
+  function getErrorMessage(error) {
+
+    const message =
+      String(error?.message || error || "")
+      .toLowerCase();
+
+    if (!navigator.onLine) {
+      return "No internet connection. Reconnect and check ticket status.";
     }
 
-    scanner = null;
+    if (
+      error?.name === "AbortError" ||
+      message.includes("timeout")
+    ) {
+      return "Server timeout. Check ticket status before retrying.";
+    }
+
+    if (
+      error?.status === 401 ||
+      message.includes("invalid staff")
+    ) {
+      return "Invalid staff access key or session.";
+    }
+
+    if (error?.status === 403) {
+      return "Access denied. Check the API configuration.";
+    }
+
+    if (
+      message.includes("failed to fetch") ||
+      message.includes("network")
+    ) {
+      return "Connection failed. Please check your internet connection.";
+    }
+
+    if (
+      message.includes("permission") ||
+      message.includes("notallowed") ||
+      message.includes("denied")
+    ) {
+      return "Camera permission denied. Enable camera access in browser settings.";
+    }
+
+    if (
+      message.includes("notfound") ||
+      message.includes("no camera")
+    ) {
+      return "No camera found on this device.";
+    }
+
+    if (
+      message.includes("notreadable") ||
+      message.includes("could not start")
+    ) {
+      return "Camera unavailable. Close other apps using the camera.";
+    }
+
+    if (message.includes("library")) {
+      return "QR scanner library could not load.";
+    }
+
+    return error?.message || "Unexpected error occurred.";
   }
 
-  document.getElementById("startButton").disabled =
-    false;
-}
+  // =====================================
+  // RESULT DISPLAY
+  // =====================================
 
+  function showResult(
+    title,
+    type = "info",
+    number = "",
+    detail = ""
+  ) {
 
-// ========================================
-// VERIFY TICKET
-// ========================================
+    const result =
+      document.getElementById("result");
 
-async function verifyTicket() {
-  if (processing) return;
+    result.className = "result " + type;
 
-  const input =
-    document.getElementById("ticketInput").value;
+    document.getElementById("resultTitle")
+      .textContent = title;
 
-  const token = extractToken(input);
+    document.getElementById("resultNumber")
+      .textContent = number || "";
 
-  if (!token) {
-    showResult("No ticket token found.", "error");
-    return;
+    document.getElementById("resultDetail")
+      .textContent = detail || "";
   }
 
-  verifiedToken = null;
-  processing = true;
+  // =====================================
+  // STAFF LOGIN
+  // =====================================
 
-  document.getElementById("checkinButton")
-    .classList.add("hidden");
+  async function login() {
 
-  try {
-    const data = await apiRequest("verify", token);
+    const name = document
+      .getElementById("staffName")
+      .value.trim();
 
-    if (data.success && data.status === "AVAILABLE") {
-      verifiedToken = token;
+    const key = document
+      .getElementById("staffKey")
+      .value.trim();
 
-      showResult(
-        "✅ VALID TICKET",
-        "success",
-        data.ticketNumber
-      );
+    if (!name || !key) {
+      document.getElementById("loginError")
+        .textContent =
+        "Please enter your name and access key.";
+      return;
+    }
 
-      document.getElementById("checkinButton")
+    const button =
+      document.getElementById("loginButton");
+
+    button.disabled = true;
+    button.textContent = "Connecting...";
+
+    staffName = name;
+    staffKey = key;
+
+    try {
+
+      const data = await apiRequest("dashboard");
+
+      if (!data.success) {
+        throw new Error(
+          data.message || "Login failed."
+        );
+      }
+
+      document.getElementById("loginCard")
+        .classList.add("hidden");
+
+      document.getElementById("dashboard")
         .classList.remove("hidden");
 
-    } else {
-      showResult(
-        "❌ " + data.message,
-        "error",
-        data.ticketNumber
-      );
+      document.getElementById("staffDisplay")
+        .textContent = "Staff: " + staffName;
+
+      updateDashboard(data);
+
+      // Refresh counts every 15 seconds.
+      dashboardTimer = setInterval(() => {
+        loadDashboard().catch(console.error);
+      }, 15000);
+
+      document.getElementById("loginError")
+        .textContent = "";
+
+    } catch (error) {
+
+      document.getElementById("loginError")
+        .textContent = getErrorMessage(error);
+
+      // Retain the typed password in the form
+      // so staff can correct or retry it.
+    } finally {
+
+      button.disabled = false;
+      button.textContent = "Open Ticket Scanner";
+    }
+  }
+
+  // =====================================
+  // DASHBOARD
+  // =====================================
+
+  function updateDashboard(data) {
+
+    document.getElementById("total")
+      .textContent = data.total ?? 0;
+
+    document.getElementById("available")
+      .textContent = data.available ?? 0;
+
+    document.getElementById("used")
+      .textContent = data.used ?? 0;
+  }
+
+  async function loadDashboard() {
+
+    const data = await apiRequest("dashboard");
+
+    if (data.success) {
+      updateDashboard(data);
     }
 
-  } catch (error) {
-    showResult(error.message, "error");
-
-  } finally {
-    processing = false;
+    return data;
   }
-}
 
+  // =====================================
+  // EXTRACT TOKEN
+  // =====================================
 
-// ========================================
-// CONFIRM CHECK-IN
-// ========================================
+  function extractToken(value) {
 
-async function confirmCheckIn() {
-  if (!verifiedToken || processing) return;
+    if (typeof value !== "string") return "";
 
-  processing = true;
+    value = value.trim();
 
-  const token = verifiedToken;
-  verifiedToken = null;
+    if (!value) return "";
 
-  document.getElementById("checkinButton")
-    .classList.add("hidden");
+    try {
 
-  try {
-    const data = await apiRequest("checkin", token);
+      const url = new URL(value);
+
+      if (!["https:", "http:"].includes(url.protocol)) {
+        return "";
+      }
+
+      return url.searchParams.get("t") || "";
+
+    } catch (error) {
+
+      return value;
+    }
+  }
+
+  // =====================================
+  // CHECK-IN LOGIC
+  // =====================================
+
+  async function automaticCheckIn(decodedText) {
+
+    if (processing) return;
+
+    const token = extractToken(decodedText);
+
+    if (!token) {
+      showResult(
+        "INVALID QR CODE",
+        "error",
+        "",
+        "No valid ticket token found."
+      );
+      return;
+    }
+
+    // Prevent repeated requests while one transaction runs.
+    processing = true;
 
     showResult(
-      data.message,
-      data.success ? "success" : "error",
-      data.ticketNumber
+      "CHECKING TICKET...",
+      "info",
+      "",
+      "Please wait for the result."
     );
 
-    await loadDashboard();
+    try {
 
-  } catch (error) {
-    showResult(error.message, "error");
+      // One request performs verification and check-in.
+      const data = await apiRequest("checkin", token);
 
-  } finally {
-    processing = false;
+      if (data.success) {
+
+        showResult(
+          "✓ CHECK-IN SUCCESSFUL",
+          "success",
+          data.ticketNumber,
+          "Entry approved"
+        );
+
+        if (navigator.vibrate) {
+          navigator.vibrate(120);
+        }
+
+      } else {
+
+        const status = data.status || "";
+
+        if (status === "USED") {
+
+          showResult(
+            "✕ ALREADY CHECKED IN",
+            "error",
+            data.ticketNumber,
+            "Do not allow duplicate entry."
+          );
+
+        } else if (status === "INVALID") {
+
+          showResult(
+            "✕ INVALID TICKET",
+            "error",
+            "",
+            "Ticket not found in the database."
+          );
+
+        } else {
+
+          showResult(
+            "✕ TICKET NOT AVAILABLE",
+            "error",
+            data.ticketNumber,
+            data.message || "Entry denied."
+          );
+        }
+      }
+
+      // Dashboard refresh does not delay the result.
+      loadDashboard().catch(console.error);
+
+    } catch (error) {
+
+      showResult(
+        "⚠ CHECK-IN UNCERTAIN",
+        "warning",
+        "",
+        getErrorMessage(error)
+      );
+
+      // Important:
+      // A timeout may happen after D1 has updated.
+      // Never automatically repeat the transaction.
+
+    } finally {
+
+      processing = false;
+    }
   }
-}
 
+  // =====================================
+  // CAMERA SCANNER
+  // =====================================
 
-// ========================================
-// NEXT TICKET
-// ========================================
+  async function startScanner() {
 
-async function resetScanner() {
-  await stopScanner();
+    if (scannerRunning || scannerStarting) return;
 
-  verifiedToken = null;
-  scanHandled = false;
+    scannerStarting = true;
 
-  document.getElementById("ticketInput").value = "";
+    const startButton =
+      document.getElementById("startButton");
 
-  document.getElementById("result").style.display =
-    "none";
+    startButton.disabled = true;
 
-  document.getElementById("checkinButton")
-    .classList.add("hidden");
-}
+    try {
 
+      if (typeof Html5Qrcode === "undefined") {
+        throw new Error("QR scanner library unavailable.");
+      }
 
-// ========================================
-// LOGOUT
-// ========================================
+      if (
+        !window.isSecureContext ||
+        !navigator.mediaDevices?.getUserMedia
+      ) {
+        throw new Error(
+          "Camera requires HTTPS and a compatible browser."
+        );
+      }
 
-async function logout() {
-  await stopScanner();
+      // Clean up a previous failed initialization.
+      if (scanner) {
+        try {
+          if (scanner.isScanning) await scanner.stop();
+          scanner.clear();
+        } catch (e) {
+          console.error(e);
+        }
+        scanner = null;
+      }
 
-  staffKey = "";
-  staffName = "";
-  verifiedToken = null;
+      scanner = new Html5Qrcode("reader", {
+        formatsToSupport: [
+          Html5QrcodeSupportedFormats.QR_CODE,
+          Html5QrcodeSupportedFormats.CODE_128
+        ],
+        useBarCodeDetectorIfSupported: false,
+        verbose: false
+      });
 
-  document.getElementById("staffKey").value = "";
+      await scanner.start(
 
-  document.getElementById("dashboard")
-    .classList.add("hidden");
+        { facingMode: "environment" },
 
-  document.getElementById("loginCard")
-    .classList.remove("hidden");
-}
+        {
+          fps: 12,
+
+          qrbox: (width, height) => ({
+            width: Math.min(280, Math.max(100, width - 20)),
+            height: Math.min(160, Math.max(80, height - 20))
+          })
+        },
+
+        async (decodedText) => {
+
+          if (!scannerRunning || processing) return;
+
+          const token = extractToken(decodedText);
+
+          if (!token) return;
+
+          const now = Date.now();
+
+          // Limit repeated reads of the same QR code.
+          if (
+            token === lastToken &&
+            now - lastScanTime < SCAN_COOLDOWN_MS
+          ) {
+            return;
+          }
+
+          lastToken = token;
+          lastScanTime = now;
+
+          await automaticCheckIn(decodedText);
+        },
+
+        () => {
+          // A frame without a QR code is normal.
+        }
+      );
+
+      scannerRunning = true;
+
+      document.getElementById("cameraPlaceholder")
+        .classList.add("hidden");
+
+      document.getElementById("cameraStatus")
+        .textContent = "● LIVE";
+
+      document.getElementById("cameraStatus")
+        .classList.add("active");
+
+      document.getElementById("stopButton")
+        .disabled = false;
+
+      showResult(
+        "CAMERA READY",
+        "info",
+        "",
+        "Point the camera at a ticket."
+      );
+
+    } catch (error) {
+
+      showResult(
+        "CAMERA ERROR",
+        "error",
+        "",
+        getErrorMessage(error)
+      );
+
+      await stopScanner();
+
+    } finally {
+
+      scannerStarting = false;
+
+      startButton.disabled = scannerRunning;
+    }
+  }
+
+  // =====================================
+  // CLOSE CAMERA
+  // =====================================
+
+  async function stopScanner() {
+
+    scannerRunning = false;
+
+    if (scanner) {
+
+      try {
+
+        if (scanner.isScanning) {
+          await scanner.stop();
+        }
+
+        scanner.clear();
+
+      } catch (error) {
+        console.error("Camera cleanup:", error);
+      }
+
+      scanner = null;
+    }
+
+    document.getElementById("cameraPlaceholder")
+      .classList.remove("hidden");
+
+    document.getElementById("cameraStatus")
+      .textContent = "Camera Off";
+
+    document.getElementById("cameraStatus")
+      .classList.remove("active");
+
+    document.getElementById("startButton")
+      .disabled = false;
+
+    document.getElementById("stopButton")
+      .disabled = true;
+  }
+
+  // =====================================
+  // MANUAL CHECK-IN
+  // =====================================
+
+  async function manualCheckIn() {
+
+    if (processing) return;
+
+    const input = document
+      .getElementById("manualToken");
+
+    const value = input.value.trim();
+
+    if (!value) {
+      showResult(
+        "ENTER A TICKET",
+        "warning",
+        "",
+        "Paste the QR token or verification URL."
+      );
+      return;
+    }
+
+    await automaticCheckIn(value);
+
+    input.value = "";
+  }
+
+  // =====================================
+  // LOGOUT
+  // =====================================
+
+  async function logout() {
+
+    if (processing) {
+      showResult(
+        "PLEASE WAIT",
+        "warning",
+        "",
+        "A check-in request is still processing."
+      );
+      return;
+    }
+
+    await stopScanner();
+
+    if (dashboardTimer) {
+      clearInterval(dashboardTimer);
+      dashboardTimer = null;
+    }
+
+    staffName = "";
+    staffKey = "";
+
+    lastToken = "";
+    lastScanTime = 0;
+
+    document.getElementById("staffKey")
+      .value = "";
+
+    document.getElementById("dashboard")
+      .classList.add("hidden");
+
+    document.getElementById("loginCard")
+      .classList.remove("hidden");
+
+    document.getElementById("manualPanel")
+      .open = false;
+  }
+
+  // =====================================
+  // VISIBILITY
+  // =====================================
+
+  // iOS can suspend the camera when the page is
+  // backgrounded. Staff may need to restart it
+  // after returning to the browser.
+
+  document.addEventListener(
+    "visibilitychange",
+    () => {
+      if (!document.hidden) {
+        updateConnection();
+      }
+    }
+  );
 
 </script>
 
