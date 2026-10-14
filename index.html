@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
+
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1,
-             maximum-scale=1, viewport-fit=cover"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
+
+  <meta name="theme-color" content="#14232d">
 
   <title>R Brothers | Ticket Scanner</title>
 
-  <script
-    src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js">
-  </script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
   <style>
+
     :root {
       --bg: #eef1f4;
       --card: #ffffff;
@@ -29,7 +31,8 @@
       box-sizing: border-box;
     }
 
-    html, body {
+    html,
+    body {
       margin: 0;
       width: 100%;
       min-height: 100%;
@@ -43,7 +46,8 @@
       overscroll-behavior: none;
     }
 
-    button, input {
+    button,
+    input {
       font: inherit;
     }
 
@@ -67,9 +71,12 @@
       min-height: 100vh;
       min-height: 100dvh;
       margin: 0 auto;
-      padding: max(8px, env(safe-area-inset-top))
-               12px
-               max(8px, env(safe-area-inset-bottom));
+
+      padding:
+        max(8px, env(safe-area-inset-top))
+        12px
+        max(8px, env(safe-area-inset-bottom));
+
       display: flex;
       flex-direction: column;
       gap: 9px;
@@ -91,10 +98,12 @@
       background: #050505;
       border-radius: 15px;
       padding: 5px;
+
       display: flex;
       justify-content: center;
       align-items: center;
       overflow: hidden;
+
       box-shadow: 0 3px 10px #0002;
     }
 
@@ -182,8 +191,10 @@
       padding: 10px;
       border-radius: 14px;
       box-shadow: 0 2px 8px #0000000a;
+
       flex: 1;
       min-height: 0;
+
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -223,6 +234,7 @@
       border-radius: 12px;
       position: relative;
       overflow: hidden;
+
       display: flex;
       align-items: center;
       justify-content: center;
@@ -270,11 +282,13 @@
       border-radius: 11px;
       padding: 11px;
       text-align: center;
+
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       gap: 3px;
+
       background: #f1f5f9;
     }
 
@@ -353,6 +367,11 @@
       color: white;
     }
 
+    .btn-sound {
+      background: #f5eddb;
+      color: #765a26;
+    }
+
     /* FOOTER */
 
     .footer {
@@ -362,6 +381,7 @@
       justify-content: space-between;
       font-size: 11px;
       color: var(--muted);
+      gap: 6px;
     }
 
     .footer button {
@@ -399,7 +419,7 @@
       padding: 10px;
       border: 1px solid #cbd5e1;
       border-radius: 7px;
-      font-size: 13px;
+      font-size: 16px;
     }
 
     .manual-row button {
@@ -452,9 +472,11 @@
     /* COMPACT IPHONES */
 
     @media (max-height: 750px) {
+
       .app {
         gap: 6px;
-        padding-top: max(5px, env(safe-area-inset-top));
+        padding-top:
+          max(5px, env(safe-area-inset-top));
       }
 
       .logo-box {
@@ -500,7 +522,9 @@
         min-height: 38px;
         padding: 7px 9px;
       }
+
     }
+
   </style>
 </head>
 
@@ -511,19 +535,26 @@
   <!-- HEADER -->
 
   <header class="header">
+
     <div class="logo-box">
       <img src="./logo.png" alt="R Brothers Logo">
     </div>
 
     <div class="header-text">
+
       <h1>R BROTHERS</h1>
+
       <p>KABADDI 5 · YOKOHAMA</p>
 
       <div class="connection">
         <span class="dot" id="connectionDot"></span>
-        <span id="connectionText">Checking network</span>
+        <span id="connectionText">
+          Checking network
+        </span>
       </div>
+
     </div>
+
   </header>
 
   <!-- LOGIN -->
@@ -532,14 +563,20 @@
 
     <h2>Staff Login</h2>
 
-    <label for="staffName">Staff Name</label>
+    <label for="staffName">
+      Staff Name
+    </label>
+
     <input
       id="staffName"
       placeholder="Enter your name"
       autocomplete="off"
     >
 
-    <label for="staffKey">Staff Access Key</label>
+    <label for="staffKey">
+      Staff Access Key
+    </label>
+
     <input
       id="staffKey"
       type="password"
@@ -555,7 +592,11 @@
       Open Ticket Scanner
     </button>
 
-    <div class="login-error" id="loginError"></div>
+    <div
+      class="login-error"
+      id="loginError"
+    ></div>
+
   </section>
 
   <!-- MAIN DASHBOARD -->
@@ -563,10 +604,19 @@
   <main
     id="dashboard"
     class="hidden"
-    style="display:flex;flex-direction:column;gap:9px;flex:1;min-height:0"
+    style="
+      display:flex;
+      flex-direction:column;
+      gap:9px;
+      flex:1;
+      min-height:0;
+    "
   >
 
+    <!-- STATISTICS -->
+
     <section class="stats">
+
       <div class="stat">
         <strong id="total">0</strong>
         <span>Total Tickets</span>
@@ -581,15 +631,24 @@
         <strong id="used">0</strong>
         <span>Checked In</span>
       </div>
+
     </section>
+
+    <!-- SCANNER -->
 
     <section class="scanner-card">
 
       <div class="scanner-title">
+
         <h2>Entrance Scanner</h2>
-        <span class="scanner-badge" id="cameraStatus">
+
+        <span
+          class="scanner-badge"
+          id="cameraStatus"
+        >
           Camera Off
         </span>
+
       </div>
 
       <div class="camera-wrap">
@@ -601,22 +660,45 @@
           id="cameraPlaceholder"
         >
           <div class="icon">▣</div>
-          <p>Tap Start Camera to scan tickets</p>
+
+          <p>
+            Tap Start Camera to scan tickets
+          </p>
         </div>
 
       </div>
 
-      <div class="result info" id="result">
-        <div class="result-title" id="resultTitle">
+      <!-- CHECK-IN RESULT -->
+
+      <div
+        class="result info"
+        id="result"
+        role="status"
+        aria-live="polite"
+      >
+
+        <div
+          class="result-title"
+          id="resultTitle"
+        >
           Ready to Scan
         </div>
 
-        <div class="result-number" id="resultNumber"></div>
+        <div
+          class="result-number"
+          id="resultNumber"
+        ></div>
 
-        <div class="result-detail" id="resultDetail">
+        <div
+          class="result-detail"
+          id="resultDetail"
+        >
           Start the camera to begin check-in.
         </div>
+
       </div>
+
+      <!-- CAMERA CONTROLS -->
 
       <div class="button-row">
 
@@ -639,12 +721,39 @@
 
       </div>
 
+      <!-- SOUND CONTROLS -->
+
+      <div class="button-row">
+
+        <button
+          id="soundButton"
+          class="btn btn-sound"
+          onclick="toggleSound()"
+        >
+          🔊 Sound ON
+        </button>
+
+        <button
+          class="btn btn-light"
+          onclick="testSounds()"
+        >
+          ♪ Test Sounds
+        </button>
+
+      </div>
+
     </section>
 
+    <!-- MANUAL ENTRY -->
+
     <details id="manualPanel">
-      <summary>Manual ticket entry / Retry</summary>
+
+      <summary>
+        Manual ticket entry / Retry
+      </summary>
 
       <div class="manual-row">
+
         <input
           id="manualToken"
           placeholder="Paste ticket QR token"
@@ -657,20 +766,37 @@
         >
           Check In
         </button>
+
       </div>
 
-      <p style="font-size:11px;color:#64748b">
+      <p
+        style="
+          font-size:11px;
+          color:#64748b;
+        "
+      >
         Only use this when scanning fails.
         Check uncertain transactions before retrying.
       </p>
+
     </details>
 
+    <!-- FOOTER -->
+
     <footer class="footer">
-      <span id="staffDisplay">Staff</span>
 
-      <span>Created with ❤️ by SOM RAI</span>
+      <span id="staffDisplay">
+        Staff
+      </span>
 
-      <button onclick="logout()">Logout</button>
+      <span>
+        R Brothers Ticket System
+      </span>
+
+      <button onclick="logout()">
+        Logout
+      </button>
+
     </footer>
 
   </main>
@@ -679,66 +805,325 @@
 
 <script>
 
-  // =====================================
-  // CONFIGURATION
-  // =====================================
+// =====================================
+// CONFIGURATION
+// =====================================
 
-  const API_URL =
-    "https://rbrothers-ticket-api.raisom2014.workers.dev";
+const API_URL =
+  "https://rbrothers-ticket-api.raisom2014.workers.dev";
 
-  const SCAN_COOLDOWN_MS = 2500;
+const SCAN_COOLDOWN_MS = 2500;
 
-  let staffName = "";
-  let staffKey = "";
+let staffName = "";
+let staffKey = "";
 
-  let scanner = null;
-  let scannerRunning = false;
-  let scannerStarting = false;
+let scanner = null;
+let scannerRunning = false;
+let scannerStarting = false;
 
-  let processing = false;
+let processing = false;
 
-  let lastToken = "";
-  let lastScanTime = 0;
+let lastToken = "";
+let lastScanTime = 0;
 
-  let dashboardTimer = null;
+let dashboardTimer = null;
 
-  // =====================================
-  // NETWORK STATUS
-  // =====================================
 
-  function updateConnection() {
-    const online = navigator.onLine;
+// =====================================
+// AUDIO CONFIGURATION
+// =====================================
 
-    document.getElementById("connectionDot")
-      .classList.toggle("offline", !online);
+let audioContext = null;
+let soundEnabled = true;
 
-    document.getElementById("connectionText")
-      .textContent = online
-        ? "Network available"
-        : "Offline";
+
+// =====================================
+// INITIALIZE AUDIO
+// =====================================
+
+function enableScannerAudio() {
+
+  if (!soundEnabled) {
+    return Promise.resolve();
   }
 
-  window.addEventListener("online", updateConnection);
-  window.addEventListener("offline", updateConnection);
+  try {
 
-  updateConnection();
+    const AudioContextClass =
+      window.AudioContext ||
+      window.webkitAudioContext;
 
-  // =====================================
-  // API REQUEST
-  // =====================================
+    if (!AudioContextClass) {
+      console.warn(
+        "Web Audio API is not supported."
+      );
 
-  async function apiRequest(action, token = "") {
+      return Promise.resolve();
+    }
 
-    const controller = new AbortController();
+    if (!audioContext) {
+      audioContext = new AudioContextClass();
+    }
 
-    const timer = setTimeout(
-      () => controller.abort(),
-      12000
+    if (audioContext.state === "suspended") {
+      return audioContext.resume().catch(error => {
+        console.warn("Audio resume failed:", error);
+      });
+    }
+
+  } catch (error) {
+
+    console.warn(
+      "Audio initialization failed:",
+      error
+    );
+  }
+
+  return Promise.resolve();
+}
+
+
+// =====================================
+// PLAY INDIVIDUAL TONE
+// =====================================
+
+function playTone(
+  frequency,
+  startDelay,
+  duration,
+  type = "sine",
+  volume = 0.16
+) {
+
+  if (
+    !soundEnabled ||
+    !audioContext ||
+    audioContext.state !== "running"
+  ) {
+    return;
+  }
+
+  try {
+
+    const oscillator =
+      audioContext.createOscillator();
+
+    const gain =
+      audioContext.createGain();
+
+    const start =
+      audioContext.currentTime + startDelay;
+
+    oscillator.type = type;
+
+    oscillator.frequency.setValueAtTime(
+      frequency,
+      start
     );
 
-    try {
+    // Smooth attack and release.
+    gain.gain.setValueAtTime(
+      0.0001,
+      start
+    );
 
-      const response = await fetch(API_URL, {
+    gain.gain.exponentialRampToValueAtTime(
+      volume,
+      start + 0.015
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      start + duration
+    );
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    oscillator.start(start);
+
+    oscillator.stop(
+      start + duration + 0.02
+    );
+
+    oscillator.onended = () => {
+      oscillator.disconnect();
+      gain.disconnect();
+    };
+
+  } catch (error) {
+
+    console.warn(
+      "Unable to play sound:",
+      error
+    );
+  }
+}
+
+
+// =====================================
+// SUCCESS SOUND
+// =====================================
+
+function playSuccessSound() {
+
+  // Pleasant ascending double beep.
+
+  playTone(
+    660,
+    0,
+    0.14,
+    "sine",
+    0.17
+  );
+
+  playTone(
+    880,
+    0.17,
+    0.22,
+    "sine",
+    0.17
+  );
+
+  if (navigator.vibrate) {
+    navigator.vibrate(100);
+  }
+}
+
+
+// =====================================
+// ERROR SOUND
+// =====================================
+
+function playErrorSound() {
+
+  // Lower-pitched warning beeps.
+
+  playTone(
+    330,
+    0,
+    0.19,
+    "square",
+    0.075
+  );
+
+  playTone(
+    260,
+    0.24,
+    0.26,
+    "square",
+    0.075
+  );
+
+  if (navigator.vibrate) {
+    navigator.vibrate([160, 90, 160]);
+  }
+}
+
+
+// =====================================
+// SOUND ON / OFF
+// =====================================
+
+function toggleSound() {
+
+  soundEnabled = !soundEnabled;
+
+  const button =
+    document.getElementById("soundButton");
+
+  button.textContent = soundEnabled
+    ? "🔊 Sound ON"
+    : "🔇 Sound OFF";
+
+  if (soundEnabled) {
+    enableScannerAudio();
+  }
+}
+
+
+// =====================================
+// TEST SOUNDS
+// =====================================
+
+async function testSounds() {
+
+  if (!soundEnabled) {
+    showResult(
+      "SOUND DISABLED",
+      "warning",
+      "",
+      "Enable sound to test."
+    );
+
+    return;
+  }
+
+  // Begin audio activation from this button tap.
+  await enableScannerAudio();
+
+  playSuccessSound();
+
+  setTimeout(() => {
+    playErrorSound();
+  }, 850);
+}
+
+
+// =====================================
+// NETWORK STATUS
+// =====================================
+
+function updateConnection() {
+
+  const online = navigator.onLine;
+
+  document
+    .getElementById("connectionDot")
+    .classList.toggle("offline", !online);
+
+  document
+    .getElementById("connectionText")
+    .textContent = online
+      ? "Network available"
+      : "Offline";
+}
+
+window.addEventListener(
+  "online",
+  updateConnection
+);
+
+window.addEventListener(
+  "offline",
+  updateConnection
+);
+
+updateConnection();
+
+
+// =====================================
+// API REQUEST
+// =====================================
+
+async function apiRequest(
+  action,
+  token = ""
+) {
+
+  const controller =
+    new AbortController();
+
+  const timer = setTimeout(
+    () => controller.abort(),
+    12000
+  );
+
+  try {
+
+    const response = await fetch(
+      API_URL,
+      {
         method: "POST",
 
         headers: {
@@ -753,498 +1138,475 @@
         }),
 
         signal: controller.signal
-      });
-
-      const contentType =
-        response.headers.get("content-type") || "";
-
-      if (!contentType.includes("application/json")) {
-        throw new Error(
-          "Server returned an invalid response."
-        );
       }
+    );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        const error = new Error(
-          data.message || "Server request failed"
-        );
-        error.status = response.status;
-        throw error;
-      }
-
-      return data;
-
-    } finally {
-      clearTimeout(timer);
-    }
-  }
-
-  // =====================================
-  // ERROR MESSAGES
-  // =====================================
-
-  function getErrorMessage(error) {
-
-    const message =
-      String(error?.message || error || "")
-      .toLowerCase();
-
-    if (!navigator.onLine) {
-      return "No internet connection. Reconnect and check ticket status.";
-    }
+    const contentType =
+      response.headers.get("content-type") || "";
 
     if (
-      error?.name === "AbortError" ||
-      message.includes("timeout")
+      !contentType.includes("application/json")
     ) {
-      return "Server timeout. Check ticket status before retrying.";
+      throw new Error(
+        "Server returned an invalid response."
+      );
     }
 
-    if (
-      error?.status === 401 ||
-      message.includes("invalid staff")
-    ) {
-      return "Invalid staff access key or session.";
-    }
+    const data = await response.json();
 
-    if (error?.status === 403) {
-      return "Access denied. Check the API configuration.";
-    }
+    if (!response.ok) {
 
-    if (
-      message.includes("failed to fetch") ||
-      message.includes("network")
-    ) {
-      return "Connection failed. Please check your internet connection.";
-    }
+      const error = new Error(
+        data.message ||
+        "Server request failed"
+      );
 
-    if (
-      message.includes("permission") ||
-      message.includes("notallowed") ||
-      message.includes("denied")
-    ) {
-      return "Camera permission denied. Enable camera access in browser settings.";
-    }
+      error.status = response.status;
 
-    if (
-      message.includes("notfound") ||
-      message.includes("no camera")
-    ) {
-      return "No camera found on this device.";
-    }
-
-    if (
-      message.includes("notreadable") ||
-      message.includes("could not start")
-    ) {
-      return "Camera unavailable. Close other apps using the camera.";
-    }
-
-    if (message.includes("library")) {
-      return "QR scanner library could not load.";
-    }
-
-    return error?.message || "Unexpected error occurred.";
-  }
-
-  // =====================================
-  // RESULT DISPLAY
-  // =====================================
-
-  function showResult(
-    title,
-    type = "info",
-    number = "",
-    detail = ""
-  ) {
-
-    const result =
-      document.getElementById("result");
-
-    result.className = "result " + type;
-
-    document.getElementById("resultTitle")
-      .textContent = title;
-
-    document.getElementById("resultNumber")
-      .textContent = number || "";
-
-    document.getElementById("resultDetail")
-      .textContent = detail || "";
-  }
-
-  // =====================================
-  // STAFF LOGIN
-  // =====================================
-
-  async function login() {
-
-    const name = document
-      .getElementById("staffName")
-      .value.trim();
-
-    const key = document
-      .getElementById("staffKey")
-      .value.trim();
-
-    if (!name || !key) {
-      document.getElementById("loginError")
-        .textContent =
-        "Please enter your name and access key.";
-      return;
-    }
-
-    const button =
-      document.getElementById("loginButton");
-
-    button.disabled = true;
-    button.textContent = "Connecting...";
-
-    staffName = name;
-    staffKey = key;
-
-    try {
-
-      const data = await apiRequest("dashboard");
-
-      if (!data.success) {
-        throw new Error(
-          data.message || "Login failed."
-        );
-      }
-
-      document.getElementById("loginCard")
-        .classList.add("hidden");
-
-      document.getElementById("dashboard")
-        .classList.remove("hidden");
-
-      document.getElementById("staffDisplay")
-        .textContent = "Staff: " + staffName;
-
-      updateDashboard(data);
-
-      // Refresh counts every 15 seconds.
-      dashboardTimer = setInterval(() => {
-        loadDashboard().catch(console.error);
-      }, 15000);
-
-      document.getElementById("loginError")
-        .textContent = "";
-
-    } catch (error) {
-
-      document.getElementById("loginError")
-        .textContent = getErrorMessage(error);
-
-      // Retain the typed password in the form
-      // so staff can correct or retry it.
-    } finally {
-
-      button.disabled = false;
-      button.textContent = "Open Ticket Scanner";
-    }
-  }
-
-  // =====================================
-  // DASHBOARD
-  // =====================================
-
-  function updateDashboard(data) {
-
-    document.getElementById("total")
-      .textContent = data.total ?? 0;
-
-    document.getElementById("available")
-      .textContent = data.available ?? 0;
-
-    document.getElementById("used")
-      .textContent = data.used ?? 0;
-  }
-
-  async function loadDashboard() {
-
-    const data = await apiRequest("dashboard");
-
-    if (data.success) {
-      updateDashboard(data);
+      throw error;
     }
 
     return data;
+
+  } finally {
+
+    clearTimeout(timer);
+  }
+}
+
+
+// =====================================
+// ERROR MESSAGES
+// =====================================
+
+function getErrorMessage(error) {
+
+  const message = String(
+    error?.message || error || ""
+  ).toLowerCase();
+
+  if (!navigator.onLine) {
+    return "No internet connection. Check ticket status before retrying.";
   }
 
-  // =====================================
-  // EXTRACT TOKEN
-  // =====================================
-
-  function extractToken(value) {
-
-    if (typeof value !== "string") return "";
-
-    value = value.trim();
-
-    if (!value) return "";
-
-    try {
-
-      const url = new URL(value);
-
-      if (!["https:", "http:"].includes(url.protocol)) {
-        return "";
-      }
-
-      return url.searchParams.get("t") || "";
-
-    } catch (error) {
-
-      return value;
-    }
+  if (
+    error?.name === "AbortError" ||
+    message.includes("timeout")
+  ) {
+    return "Server timeout. Check ticket status before retrying.";
   }
 
-  // =====================================
-  // CHECK-IN LOGIC
-  // =====================================
+  if (
+    error?.status === 401 ||
+    message.includes("invalid staff")
+  ) {
+    return "Invalid staff access key or session.";
+  }
 
-  async function automaticCheckIn(decodedText) {
+  if (error?.status === 403) {
+    return "Access denied. Check API configuration.";
+  }
 
-    if (processing) return;
+  if (
+    message.includes("failed to fetch") ||
+    message.includes("network")
+  ) {
+    return "Connection failed. Check internet connection.";
+  }
 
-    const token = extractToken(decodedText);
+  if (
+    message.includes("permission") ||
+    message.includes("notallowed") ||
+    message.includes("denied")
+  ) {
+    return "Camera permission denied. Enable camera access.";
+  }
 
-    if (!token) {
-      showResult(
-        "INVALID QR CODE",
-        "error",
-        "",
-        "No valid ticket token found."
+  if (
+    message.includes("notfound") ||
+    message.includes("no camera")
+  ) {
+    return "No camera found on this device.";
+  }
+
+  if (
+    message.includes("notreadable") ||
+    message.includes("could not start")
+  ) {
+    return "Camera unavailable. Close other apps using the camera.";
+  }
+
+  if (message.includes("library")) {
+    return "QR scanner library could not load.";
+  }
+
+  return error?.message ||
+    "Unexpected error occurred.";
+}
+
+
+// =====================================
+// RESULT DISPLAY
+// =====================================
+
+function showResult(
+  title,
+  type = "info",
+  number = "",
+  detail = ""
+) {
+
+  const result =
+    document.getElementById("result");
+
+  result.className = "result " + type;
+
+  document
+    .getElementById("resultTitle")
+    .textContent = title;
+
+  document
+    .getElementById("resultNumber")
+    .textContent = number || "";
+
+  document
+    .getElementById("resultDetail")
+    .textContent = detail || "";
+}
+
+
+// =====================================
+// STAFF LOGIN
+// =====================================
+
+async function login() {
+
+  const name = document
+    .getElementById("staffName")
+    .value.trim();
+
+  const key = document
+    .getElementById("staffKey")
+    .value.trim();
+
+  if (!name || !key) {
+
+    document
+      .getElementById("loginError")
+      .textContent =
+      "Please enter your name and access key.";
+
+    return;
+  }
+
+  const button =
+    document.getElementById("loginButton");
+
+  button.disabled = true;
+  button.textContent = "Connecting...";
+
+  staffName = name;
+  staffKey = key;
+
+  try {
+
+    const data =
+      await apiRequest("dashboard");
+
+    if (!data.success) {
+      throw new Error(
+        data.message || "Login failed."
       );
-      return;
     }
 
-    // Prevent repeated requests while one transaction runs.
-    processing = true;
+    document
+      .getElementById("loginCard")
+      .classList.add("hidden");
+
+    document
+      .getElementById("dashboard")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("staffDisplay")
+      .textContent =
+      "Staff: " + staffName;
+
+    updateDashboard(data);
+
+    if (dashboardTimer) {
+      clearInterval(dashboardTimer);
+    }
+
+    dashboardTimer = setInterval(() => {
+
+      loadDashboard()
+        .catch(console.error);
+
+    }, 15000);
+
+    document
+      .getElementById("loginError")
+      .textContent = "";
+
+    // Audio activates when staff presses Start Camera.
+
+  } catch (error) {
+
+    document
+      .getElementById("loginError")
+      .textContent =
+      getErrorMessage(error);
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "Open Ticket Scanner";
+  }
+}
+
+
+// =====================================
+// DASHBOARD
+// =====================================
+
+function updateDashboard(data) {
+
+  document
+    .getElementById("total")
+    .textContent = data.total ?? 0;
+
+  document
+    .getElementById("available")
+    .textContent = data.available ?? 0;
+
+  document
+    .getElementById("used")
+    .textContent = data.used ?? 0;
+}
+
+
+async function loadDashboard() {
+
+  const data =
+    await apiRequest("dashboard");
+
+  if (data.success) {
+    updateDashboard(data);
+  }
+
+  return data;
+}
+
+
+// =====================================
+// EXTRACT TOKEN
+// =====================================
+
+function extractToken(value) {
+
+  if (
+    typeof value !== "string"
+  ) {
+    return "";
+  }
+
+  value = value.trim();
+
+  if (!value) {
+    return "";
+  }
+
+  try {
+
+    const url = new URL(value);
+
+    if (
+      !["https:", "http:"].includes(
+        url.protocol
+      )
+    ) {
+      return "";
+    }
+
+    return url.searchParams.get("t") || "";
+
+  } catch (error) {
+
+    return value;
+  }
+}
+
+
+// =====================================
+// AUTOMATIC CHECK-IN
+// =====================================
+
+async function automaticCheckIn(decodedText) {
+
+  if (processing) {
+    return;
+  }
+
+  const token =
+    extractToken(decodedText);
+
+  if (!token) {
 
     showResult(
-      "CHECKING TICKET...",
-      "info",
+      "INVALID QR CODE",
+      "error",
       "",
-      "Please wait for the result."
+      "No valid ticket token found."
     );
 
-    try {
+    playErrorSound();
 
-      // One request performs verification and check-in.
-      const data = await apiRequest("checkin", token);
+    return;
+  }
 
-      if (data.success) {
+  processing = true;
+
+  showResult(
+    "CHECKING TICKET...",
+    "info",
+    "",
+    "Please wait for the result."
+  );
+
+  try {
+
+    // One request verifies and checks in.
+    const data =
+      await apiRequest("checkin", token);
+
+    if (data.success) {
+
+      showResult(
+        "✓ CHECK-IN SUCCESSFUL",
+        "success",
+        data.ticketNumber,
+        "Entry approved"
+      );
+
+      // Play confirmation sound only after
+      // the backend confirms successful entry.
+      playSuccessSound();
+
+    } else {
+
+      const status =
+        data.status || "";
+
+      if (status === "USED") {
 
         showResult(
-          "✓ CHECK-IN SUCCESSFUL",
-          "success",
+          "✕ ALREADY CHECKED IN",
+          "error",
           data.ticketNumber,
-          "Entry approved"
+          "Do not allow duplicate entry."
         );
 
-        if (navigator.vibrate) {
-          navigator.vibrate(120);
-        }
+        playErrorSound();
+
+      } else if (
+        status === "INVALID"
+      ) {
+
+        showResult(
+          "✕ INVALID TICKET",
+          "error",
+          "",
+          "Ticket not found in database."
+        );
+
+        playErrorSound();
 
       } else {
 
-        const status = data.status || "";
-
-        if (status === "USED") {
-
-          showResult(
-            "✕ ALREADY CHECKED IN",
-            "error",
-            data.ticketNumber,
-            "Do not allow duplicate entry."
-          );
-
-        } else if (status === "INVALID") {
-
-          showResult(
-            "✕ INVALID TICKET",
-            "error",
-            "",
-            "Ticket not found in the database."
-          );
-
-        } else {
-
-          showResult(
-            "✕ TICKET NOT AVAILABLE",
-            "error",
-            data.ticketNumber,
-            data.message || "Entry denied."
-          );
-        }
-      }
-
-      // Dashboard refresh does not delay the result.
-      loadDashboard().catch(console.error);
-
-    } catch (error) {
-
-      showResult(
-        "⚠ CHECK-IN UNCERTAIN",
-        "warning",
-        "",
-        getErrorMessage(error)
-      );
-
-      // Important:
-      // A timeout may happen after D1 has updated.
-      // Never automatically repeat the transaction.
-
-    } finally {
-
-      processing = false;
-    }
-  }
-
-  // =====================================
-  // CAMERA SCANNER
-  // =====================================
-
-  async function startScanner() {
-
-    if (scannerRunning || scannerStarting) return;
-
-    scannerStarting = true;
-
-    const startButton =
-      document.getElementById("startButton");
-
-    startButton.disabled = true;
-
-    try {
-
-      if (typeof Html5Qrcode === "undefined") {
-        throw new Error("QR scanner library unavailable.");
-      }
-
-      if (
-        !window.isSecureContext ||
-        !navigator.mediaDevices?.getUserMedia
-      ) {
-        throw new Error(
-          "Camera requires HTTPS and a compatible browser."
+        showResult(
+          "✕ TICKET NOT AVAILABLE",
+          "error",
+          data.ticketNumber,
+          data.message || "Entry denied."
         );
+
+        playErrorSound();
       }
-
-      // Clean up a previous failed initialization.
-      if (scanner) {
-        try {
-          if (scanner.isScanning) await scanner.stop();
-          scanner.clear();
-        } catch (e) {
-          console.error(e);
-        }
-        scanner = null;
-      }
-
-      scanner = new Html5Qrcode("reader", {
-        formatsToSupport: [
-          Html5QrcodeSupportedFormats.QR_CODE,
-          Html5QrcodeSupportedFormats.CODE_128
-        ],
-        useBarCodeDetectorIfSupported: false,
-        verbose: false
-      });
-
-      await scanner.start(
-
-        { facingMode: "environment" },
-
-        {
-          fps: 12,
-
-          qrbox: (width, height) => ({
-            width: Math.min(280, Math.max(100, width - 20)),
-            height: Math.min(160, Math.max(80, height - 20))
-          })
-        },
-
-        async (decodedText) => {
-
-          if (!scannerRunning || processing) return;
-
-          const token = extractToken(decodedText);
-
-          if (!token) return;
-
-          const now = Date.now();
-
-          // Limit repeated reads of the same QR code.
-          if (
-            token === lastToken &&
-            now - lastScanTime < SCAN_COOLDOWN_MS
-          ) {
-            return;
-          }
-
-          lastToken = token;
-          lastScanTime = now;
-
-          await automaticCheckIn(decodedText);
-        },
-
-        () => {
-          // A frame without a QR code is normal.
-        }
-      );
-
-      scannerRunning = true;
-
-      document.getElementById("cameraPlaceholder")
-        .classList.add("hidden");
-
-      document.getElementById("cameraStatus")
-        .textContent = "● LIVE";
-
-      document.getElementById("cameraStatus")
-        .classList.add("active");
-
-      document.getElementById("stopButton")
-        .disabled = false;
-
-      showResult(
-        "CAMERA READY",
-        "info",
-        "",
-        "Point the camera at a ticket."
-      );
-
-    } catch (error) {
-
-      showResult(
-        "CAMERA ERROR",
-        "error",
-        "",
-        getErrorMessage(error)
-      );
-
-      await stopScanner();
-
-    } finally {
-
-      scannerStarting = false;
-
-      startButton.disabled = scannerRunning;
     }
+
+    // Refresh statistics in background.
+    loadDashboard()
+      .catch(console.error);
+
+  } catch (error) {
+
+    showResult(
+      "⚠ CHECK-IN UNCERTAIN",
+      "warning",
+      "",
+      getErrorMessage(error)
+    );
+
+    playErrorSound();
+
+    // IMPORTANT:
+    // Do not automatically retry after a timeout.
+    // The database may already have recorded entry.
+
+  } finally {
+
+    processing = false;
+  }
+}
+
+
+// =====================================
+// CAMERA SCANNER
+// =====================================
+
+async function startScanner() {
+
+  if (
+    scannerRunning ||
+    scannerStarting
+  ) {
+    return;
   }
 
-  // =====================================
-  // CLOSE CAMERA
-  // =====================================
+  // Must be initiated by the user's button tap
+  // for iPhone browser audio policies.
+  const audioReady = enableScannerAudio();
 
-  async function stopScanner() {
+  scannerStarting = true;
 
-    scannerRunning = false;
+  const startButton =
+    document.getElementById("startButton");
+
+  startButton.disabled = true;
+
+  try {
+
+    await audioReady;
+
+    if (
+      typeof Html5Qrcode === "undefined"
+    ) {
+      throw new Error(
+        "QR scanner library unavailable."
+      );
+    }
+
+    if (
+      !window.isSecureContext ||
+      !navigator.mediaDevices?.getUserMedia
+    ) {
+      throw new Error(
+        "Camera requires HTTPS and a compatible browser."
+      );
+    }
 
     if (scanner) {
 
@@ -1257,114 +1619,287 @@
         scanner.clear();
 
       } catch (error) {
-        console.error("Camera cleanup:", error);
+        console.error(error);
       }
 
       scanner = null;
     }
 
-    document.getElementById("cameraPlaceholder")
-      .classList.remove("hidden");
+    scanner = new Html5Qrcode(
+      "reader",
+      {
+        formatsToSupport: [
+          Html5QrcodeSupportedFormats.QR_CODE,
+          Html5QrcodeSupportedFormats.CODE_128
+        ],
 
-    document.getElementById("cameraStatus")
-      .textContent = "Camera Off";
+        useBarCodeDetectorIfSupported: false,
+        verbose: false
+      }
+    );
 
-    document.getElementById("cameraStatus")
-      .classList.remove("active");
+    await scanner.start(
 
-    document.getElementById("startButton")
+      {
+        facingMode: "environment"
+      },
+
+      {
+        fps: 12,
+
+        qrbox: (width, height) => ({
+          width: Math.min(
+            280,
+            Math.max(100, width - 20)
+          ),
+
+          height: Math.min(
+            160,
+            Math.max(80, height - 20)
+          )
+        })
+      },
+
+      async (decodedText) => {
+
+        if (
+          !scannerRunning ||
+          processing
+        ) {
+          return;
+        }
+
+        const token =
+          extractToken(decodedText);
+
+        if (!token) {
+          return;
+        }
+
+        const now = Date.now();
+
+        // Suppress repeated reads of the same
+        // QR code within a short period.
+        if (
+          token === lastToken &&
+          now - lastScanTime < SCAN_COOLDOWN_MS
+        ) {
+          return;
+        }
+
+        lastToken = token;
+        lastScanTime = now;
+
+        await automaticCheckIn(
+          decodedText
+        );
+      },
+
+      () => {
+        // Frames without QR codes are normal.
+      }
+
+    );
+
+    scannerRunning = true;
+
+    document
+      .getElementById("cameraPlaceholder")
+      .classList.add("hidden");
+
+    document
+      .getElementById("cameraStatus")
+      .textContent = "● LIVE";
+
+    document
+      .getElementById("cameraStatus")
+      .classList.add("active");
+
+    document
+      .getElementById("stopButton")
       .disabled = false;
 
-    document.getElementById("stopButton")
-      .disabled = true;
-  }
+    showResult(
+      "CAMERA READY",
+      "info",
+      "",
+      "Point the camera at a ticket."
+    );
 
-  // =====================================
-  // MANUAL CHECK-IN
-  // =====================================
+  } catch (error) {
 
-  async function manualCheckIn() {
-
-    if (processing) return;
-
-    const input = document
-      .getElementById("manualToken");
-
-    const value = input.value.trim();
-
-    if (!value) {
-      showResult(
-        "ENTER A TICKET",
-        "warning",
-        "",
-        "Paste the QR token or verification URL."
-      );
-      return;
-    }
-
-    await automaticCheckIn(value);
-
-    input.value = "";
-  }
-
-  // =====================================
-  // LOGOUT
-  // =====================================
-
-  async function logout() {
-
-    if (processing) {
-      showResult(
-        "PLEASE WAIT",
-        "warning",
-        "",
-        "A check-in request is still processing."
-      );
-      return;
-    }
+    showResult(
+      "CAMERA ERROR",
+      "error",
+      "",
+      getErrorMessage(error)
+    );
 
     await stopScanner();
 
-    if (dashboardTimer) {
-      clearInterval(dashboardTimer);
-      dashboardTimer = null;
+  } finally {
+
+    scannerStarting = false;
+
+    startButton.disabled =
+      scannerRunning;
+  }
+}
+
+
+// =====================================
+// CLOSE CAMERA
+// =====================================
+
+async function stopScanner() {
+
+  scannerRunning = false;
+
+  if (scanner) {
+
+    try {
+
+      if (scanner.isScanning) {
+        await scanner.stop();
+      }
+
+      scanner.clear();
+
+    } catch (error) {
+
+      console.error(
+        "Camera cleanup:",
+        error
+      );
     }
 
-    staffName = "";
-    staffKey = "";
-
-    lastToken = "";
-    lastScanTime = 0;
-
-    document.getElementById("staffKey")
-      .value = "";
-
-    document.getElementById("dashboard")
-      .classList.add("hidden");
-
-    document.getElementById("loginCard")
-      .classList.remove("hidden");
-
-    document.getElementById("manualPanel")
-      .open = false;
+    scanner = null;
   }
 
-  // =====================================
-  // VISIBILITY
-  // =====================================
+  document
+    .getElementById("cameraPlaceholder")
+    .classList.remove("hidden");
 
-  // iOS can suspend the camera when the page is
-  // backgrounded. Staff may need to restart it
-  // after returning to the browser.
+  document
+    .getElementById("cameraStatus")
+    .textContent = "Camera Off";
 
-  document.addEventListener(
-    "visibilitychange",
-    () => {
-      if (!document.hidden) {
-        updateConnection();
-      }
+  document
+    .getElementById("cameraStatus")
+    .classList.remove("active");
+
+  document
+    .getElementById("startButton")
+    .disabled = false;
+
+  document
+    .getElementById("stopButton")
+    .disabled = true;
+}
+
+
+// =====================================
+// MANUAL CHECK-IN
+// =====================================
+
+async function manualCheckIn() {
+
+  if (processing) {
+    return;
+  }
+
+  const input = document
+    .getElementById("manualToken");
+
+  const value =
+    input.value.trim();
+
+  if (!value) {
+
+    showResult(
+      "ENTER A TICKET",
+      "warning",
+      "",
+      "Paste the QR token or verification URL."
+    );
+
+    return;
+  }
+
+  // Activate audio from manual button interaction.
+  await enableScannerAudio();
+
+  await automaticCheckIn(value);
+
+  input.value = "";
+}
+
+
+// =====================================
+// LOGOUT
+// =====================================
+
+async function logout() {
+
+  if (processing) {
+
+    showResult(
+      "PLEASE WAIT",
+      "warning",
+      "",
+      "A check-in request is still processing."
+    );
+
+    return;
+  }
+
+  await stopScanner();
+
+  if (dashboardTimer) {
+
+    clearInterval(dashboardTimer);
+
+    dashboardTimer = null;
+  }
+
+  staffName = "";
+  staffKey = "";
+
+  lastToken = "";
+  lastScanTime = 0;
+
+  document
+    .getElementById("staffKey")
+    .value = "";
+
+  document
+    .getElementById("dashboard")
+    .classList.add("hidden");
+
+  document
+    .getElementById("loginCard")
+    .classList.remove("hidden");
+
+  document
+    .getElementById("manualPanel")
+    .open = false;
+}
+
+
+// =====================================
+// PAGE VISIBILITY
+// =====================================
+
+document.addEventListener(
+  "visibilitychange",
+  () => {
+
+    if (!document.hidden) {
+      updateConnection();
     }
-  );
+
+  }
+);
 
 </script>
 
